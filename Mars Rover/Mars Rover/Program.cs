@@ -67,7 +67,7 @@ namespace Mars_Rover
                 }
             }
             /******************************************************************************************************************/
-            //Rover 1 Commands
+            //Rover-One Commands
             Console.WriteLine("Please enter the location of Rover-One and its direction. <x y N/S/E/W>");
             string[] loc = Console.ReadLine().Split(' ', ',');
             while (!Validate(plateau, loc, ref rover1))
@@ -83,12 +83,16 @@ namespace Mars_Rover
                 rover1Move = Console.ReadLine().ToUpper().ToCharArray();
             }
             /******************************************************************************************************************/
-            //Rover 2 Commands
+            //Rover-Two Commands
             Console.WriteLine("Please enter the location of Rover-Two and its direction. <x y N/S/E/W>");
             loc = Console.ReadLine().Split(' ', ',');
-            while (!Validate(plateau, loc, ref rover2))
+            //ensure Rover-Two is on the plateau and does not have the same Coords as Rover-One
+            while (!Validate(plateau, loc, ref rover2) || rover1.x == rover2.x && rover1.y == rover2.y)
             {
-                Console.WriteLine("Please ensure your are entering valid coordinates in the form <x y d>");
+                if (rover1.x == rover2.x && rover1.y == rover2.y)
+                    Console.WriteLine("Rover-Two cannot be on top of Rover-One. Please check your coordinates.");
+                else
+                    Console.WriteLine("Please ensure your are entering valid coordinates in the form <x y d>");
                 loc = Console.ReadLine().Split(' ', ',');
             }
             Console.WriteLine("Please enter the list of movements you would like Rover-Two to make using only these letters L/R/M");
@@ -102,7 +106,7 @@ namespace Mars_Rover
             //Time for Movement Checks
             Move(plateau, ref rover1, ref rover2, rover1Move);
             Move(plateau, ref rover2, ref rover1, rover2Move);
-            Console.WriteLine("Rovers have completed their mission. Rover-One has stopped at ({0},{1}) facing {2}, and Rover-Two has stopped at ({3},{4}) facing {5}.", rover1.x, rover1.y, rover1.direction, rover2.x, rover2.y, rover2.direction);
+            Console.WriteLine("Rovers have completed their mission. Rover-One has stopped at ({0},{1}) facing {2}, \nand Rover-Two has stopped at ({3},{4}) facing {5}.", rover1.x, rover1.y, rover1.direction, rover2.x, rover2.y, rover2.direction);
             Console.ReadKey();
         }
         /**************************************************************************************************************************/
@@ -246,7 +250,15 @@ namespace Mars_Rover
             {
                 rover.x++;
                 if (rover.x <= board[0])
-                    return Collision(rover, rover2);
+                {
+                    if (!Collision(rover, rover2))
+                    {
+                        rover.x--;
+                        return false;
+                    }
+                    else
+                        return true;
+                }
                 else
                     rover.x--;
             }
@@ -254,7 +266,15 @@ namespace Mars_Rover
             {
                 rover.y++;
                 if (rover.y <= board[1])
-                    return Collision(rover, rover2);
+                {
+                    if (!Collision(rover, rover2))
+                    {
+                        rover.y--;
+                        return false;
+                    }
+                    else
+                        return true;
+                }
                 else
                     rover.y--;
             }
@@ -262,7 +282,15 @@ namespace Mars_Rover
             {
                 rover.x--;
                 if (rover.x >= 0)
-                    return Collision(rover, rover2);
+                {
+                    if (!Collision(rover, rover2))
+                    {
+                        rover.x++;
+                        return false;
+                    }
+                    else
+                        return true;
+                }
                 else
                     rover.x++;
             }
@@ -270,7 +298,15 @@ namespace Mars_Rover
             {
                 rover.y--;
                 if (rover.y >= 0)
-                    return Collision(rover, rover2);
+                {
+                    if (!Collision(rover, rover2))
+                    {
+                        rover.y++;
+                        return false;
+                    }
+                    else
+                        return true;
+                }
                 else
                     rover.y++;
             }
