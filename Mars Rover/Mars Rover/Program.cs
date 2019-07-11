@@ -246,7 +246,7 @@ namespace Mars_Rover
         //Method for moving a rover forward one space (if valid, check for collisions and out of bounds)
         public static bool Forward(int[] board, ref Rover rover, Rover rover2)
         {
-            if (rover.direction == 'N')
+            if (rover.direction == 'E')
             {
                 rover.x++;
                 if (rover.x <= board[0])
@@ -262,7 +262,7 @@ namespace Mars_Rover
                 else
                     rover.x--;
             }
-            else if (rover.direction == 'E')
+            else if (rover.direction == 'N')
             {
                 rover.y++;
                 if (rover.y <= board[1])
@@ -278,7 +278,7 @@ namespace Mars_Rover
                 else
                     rover.y--;
             }
-            else if (rover.direction == 'S')
+            else if (rover.direction == 'W')
             {
                 rover.x--;
                 if (rover.x >= 0)
