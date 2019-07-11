@@ -26,10 +26,10 @@ using System.Threading.Tasks;
  *  L/R/M stands for the rovers movements of left, right, or forward respectively
  */
 
-namespace Mars_Rover
+namespace MarsRover
 {
 
-    class Program
+    public class Program
     {
         //readonly variable, acts as compass for turning methods
         public static readonly char[] direction = new char[4] { 'N', 'E', 'S', 'W' };
@@ -104,7 +104,9 @@ namespace Mars_Rover
             }
             /******************************************************************************************************************/
             //Time for Movement Checks
+            Console.WriteLine("Rover-One is now Moving");
             Move(plateau, ref rover1, ref rover2, rover1Move);
+            Console.WriteLine("Rover-Two is now Moving");
             Move(plateau, ref rover2, ref rover1, rover2Move);
             Console.WriteLine("Rovers have completed their mission. Rover-One has stopped at ({0},{1}) facing {2}, \nand Rover-Two has stopped at ({3},{4}) facing {5}.", rover1.x, rover1.y, rover1.direction, rover2.x, rover2.y, rover2.direction);
             Console.ReadKey();
@@ -254,7 +256,7 @@ namespace Mars_Rover
                 rover.x++;
                 if (rover.x <= board[0])
                 {
-                    if (!Collision(rover, rover2))
+                    if (Collision(rover, rover2))
                     {
                         rover.x--;
                         return false;
@@ -270,7 +272,7 @@ namespace Mars_Rover
                 rover.y++;
                 if (rover.y <= board[1])
                 {
-                    if (!Collision(rover, rover2))
+                    if (Collision(rover, rover2))
                     {
                         rover.y--;
                         return false;
@@ -286,7 +288,7 @@ namespace Mars_Rover
                 rover.x--;
                 if (rover.x >= 0)
                 {
-                    if (!Collision(rover, rover2))
+                    if (Collision(rover, rover2))
                     {
                         rover.x++;
                         return false;
@@ -302,7 +304,7 @@ namespace Mars_Rover
                 rover.y--;
                 if (rover.y >= 0)
                 {
-                    if (!Collision(rover, rover2))
+                    if (Collision(rover, rover2))
                     {
                         rover.y++;
                         return false;
@@ -322,10 +324,10 @@ namespace Mars_Rover
             if (rover.x == rover2.x && rover.y == rover2.y)
             {
                 Console.WriteLine("Collision Detected: collision occurs at point {0},{1}.", rover.x, rover.y);
-                return false;
+                return true;
             }
             else
-                return true;
+                return false;
         }
     }
 }
