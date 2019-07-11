@@ -40,27 +40,20 @@ namespace Mars_Rover
         }
         static void Main(string[] args)
         {
+            //Initialize two rovers: Sending to Mars
             Rover rover1 = new Rover();
             Rover rover2 = new Rover();
+            //Prompt user for size of plateau to begin
             Console.WriteLine("Welcome Explorer. Please enter the size of the plateau field. <x y>");
             int[] plateau = { -1, -1 };
             bool valid = false;
             int i;
-            //int j = 0;
+            //refresh input until user provides valid coordinates for plateau
             while (!valid)
             {
                 string[] temp = Console.ReadLine().Split(' ', ',');
-                /*for (int i = 0; i < temp.Length; i++)
-                {
-                    if (Int32.TryParse(temp[i], out int num))
-                    {
-                        plateau[j] = num;
-                        if (j++ == 2)
-                            break;
-                    }
-                }*/
                 i = 0;
-                if (!Validate(ref plateau, ref i, temp))//plateau[1] == -1)
+                if (!Validate(ref plateau, ref i, temp))
                 {
                     Console.WriteLine("Oops, the coordinates you entered aren't quite right. Please re-enter the coordinates.");
                     //j = 0;
@@ -106,11 +99,8 @@ namespace Mars_Rover
             /******************************************************************************************************************/
             //Time for Movement Checks
             Move(plateau, rover1, rover2, rover1Move);
-            /*while (!Move(plateau, ref rover1, rover1Move))
-            {
-                Console.WriteLine("Oops, looks like your rover is going to fall off the plateau");
-            }*/
-            Console.WriteLine("So far, So good");
+            Move(plateau, rover2, rover1, rover2Move);
+            Console.WriteLine("Rovers have completed their mission. Rover-One has stopped at ({0},{1}) facing {2}, and Rover-Two has stopped at ({3},{4}) facing {5}.", rover1.x, rover1.y, rover1.direction, rover2.x, rover2.y, rover2.direction);
             Console.ReadKey();
         }
         /**************************************************************************************************************************/
@@ -177,6 +167,11 @@ namespace Mars_Rover
             {
                 if (Int32.TryParse(userInput[i], out int num))
                 {
+                    if(num < 0)
+                    {
+                        Console.WriteLine("Oops, Coordinates cannot be negative.");
+                        break;
+                    }
                     coord[j] = num;
                     if (++j == 2)
                         break;
