@@ -210,6 +210,7 @@ namespace Mars_Rover
                         return false;
                     }
                 }
+                Console.WriteLine("Rover position is now {0},{1} facing {2}", rover.x, rover.y, rover.direction);
             }
             return false;
         }
@@ -225,6 +226,7 @@ namespace Mars_Rover
                             rover.direction = direction[i - 1];
                         else
                             rover.direction = direction[direction.Length - 1];
+                        break;
                     }
                 }
             }
@@ -240,6 +242,7 @@ namespace Mars_Rover
                         rover.direction = direction[i + 1];
                     else
                         rover.direction = direction[0];
+                    break;
                 }
             }
         }
@@ -310,6 +313,7 @@ namespace Mars_Rover
                 else
                     rover.y++;
             }
+            Console.WriteLine("Rover is going to go off the edge, but stopped in the nick of time.");
             return false;
         }
 
