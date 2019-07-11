@@ -28,9 +28,11 @@ using System.Threading.Tasks;
 
 namespace Mars_Rover
 {
-    
+
     class Program
     {
+        //readonly variable, acts as compass for turning methods
+        public static readonly char[] direction = new char[4] { 'N', 'E', 'S', 'W' };
         //Struct containing the coordinates and direction of a rover
         public struct Rover
         {
@@ -68,7 +70,7 @@ namespace Mars_Rover
             //Rover 1 Commands
             Console.WriteLine("Please enter the location of Rover-One and its direction. <x y N/S/E/W>");
             string[] loc = Console.ReadLine().Split(' ', ',');
-            while (!Validate(plateau, loc, rover1))
+            while (!Validate(plateau, loc, ref rover1))
             {
                 Console.WriteLine("Please ensure your are entering valid coordinates in the form <x y d>");
                 loc = Console.ReadLine().Split(' ', ',');
@@ -82,14 +84,14 @@ namespace Mars_Rover
             }
             /******************************************************************************************************************/
             //Rover 2 Commands
-            Console.WriteLine("Please enter the location of Rover-One and its direction. <x y N/S/E/W>");
+            Console.WriteLine("Please enter the location of Rover-Two and its direction. <x y N/S/E/W>");
             loc = Console.ReadLine().Split(' ', ',');
-            while (!Validate(plateau, loc, rover2))
+            while (!Validate(plateau, loc, ref rover2))
             {
                 Console.WriteLine("Please ensure your are entering valid coordinates in the form <x y d>");
                 loc = Console.ReadLine().Split(' ', ',');
             }
-            Console.WriteLine("Please enter the list of movements you would like Rover-One to make using only these letters L/R/M");
+            Console.WriteLine("Please enter the list of movements you would like Rover-Two to make using only these letters L/R/M");
             char[] rover2Move = Console.ReadLine().ToUpper().ToCharArray();
             while (!Validate(rover2Move))
             {
@@ -98,8 +100,8 @@ namespace Mars_Rover
             }
             /******************************************************************************************************************/
             //Time for Movement Checks
-            Move(plateau, rover1, rover2, rover1Move);
-            Move(plateau, rover2, rover1, rover2Move);
+            Move(plateau, ref rover1, ref rover2, rover1Move);
+            Move(plateau, ref rover2, ref rover1, rover2Move);
             Console.WriteLine("Rovers have completed their mission. Rover-One has stopped at ({0},{1}) facing {2}, and Rover-Two has stopped at ({3},{4}) facing {5}.", rover1.x, rover1.y, rover1.direction, rover2.x, rover2.y, rover2.direction);
             Console.ReadKey();
         }
@@ -115,7 +117,7 @@ namespace Mars_Rover
             return true;
         }
         //Method for validating user input and the location of the rover
-        public static bool Validate(int[] board, string[] loc, Rover rover)
+        public static bool Validate(int[] board, string[] loc, ref Rover rover)
         {
             int i = 0;
             int[] roverCoord = { -1, -1 };
@@ -155,7 +157,7 @@ namespace Mars_Rover
                 else
                     Console.WriteLine("Oops, your direction doesnt seem right. Ensure you are using the letters N, S, E, or W.");
             }
-            Console.WriteLine("The values you entered are {0} {1} {2}", roverCoord[0], roverCoord[1], loc[i]);
+            //Console.WriteLine("The values you entered are {0} {1} {2}", roverCoord[0], roverCoord[1], loc[i]);
             return false;
         }
         //Method to validate user input and ensure it contains coordinates
@@ -167,7 +169,7 @@ namespace Mars_Rover
             {
                 if (Int32.TryParse(userInput[i], out int num))
                 {
-                    if(num < 0)
+                    if (num < 0)
                     {
                         Console.WriteLine("Oops, Coordinates cannot be negative.");
                         break;
@@ -188,17 +190,17 @@ namespace Mars_Rover
                 return true;
         }
         //Method for validating the movement and moving a rover
-        public static bool Move(int[] board, Rover rover, Rover rover2, char[] movements)
+        public static bool Move(int[] board, ref Rover rover, ref Rover rover2, char[] movements)
         {
             for (int i = 0; i < movements.Length; i++)
             {
                 if (movements[i] == 'L')
-                    Left(rover);
+                    Left(ref rover);
                 else if (movements[i] == 'R')
-                    Right(rover);
+                    Right(ref rover);
                 else
                 {
-                    if (!Forward(board, rover, rover2))
+                    if (!Forward(board, ref rover, rover2))
                     {
                         Console.WriteLine("Unable to complete command, rover stopped at location {0},{1} facing {2}", rover.x, rover.y, rover.direction);
                         return false;
@@ -208,19 +210,82 @@ namespace Mars_Rover
             return false;
         }
         //Method for changing a rover's direction Counter-Clockwise
-        public static void Left(Rover rover)
+        public static void Left(ref Rover rover)
         {
-
+            {
+                for (int i = 0; i < direction.Length; i++)
+                {
+                    if (rover.direction == direction[i])
+                    {
+                        if (i != 0)
+                            rover.direction = direction[i - 1];
+                        else
+                            rover.direction = direction[direction.Length - 1];
+                    }
+                }
+            }
         }
         //Method for changing a rover's direction Clockwise
-        public static void Right(Rover rover)
+        public static void Right(ref Rover rover)
         {
-
+            for (int i = 0; i < direction.Length; i++)
+            {
+                if (rover.direction == direction[i])
+                {
+                    if (i != direction.Length - 1)
+                        rover.direction = direction[i + 1];
+                    else
+                        rover.direction = direction[0];
+                }
+            }
         }
         //Method for moving a rover forward one space (if valid, check for collisions and out of bounds)
-        public static bool Forward(int[] board, Rover rover, Rover rover2)
+        public static bool Forward(int[] board, ref Rover rover, Rover rover2)
         {
+            if (rover.direction == 'N')
+            {
+                rover.x++;
+                if (rover.x <= board[0])
+                    return Collision(rover, rover2);
+                else
+                    rover.x--;
+            }
+            else if (rover.direction == 'E')
+            {
+                rover.y++;
+                if (rover.y <= board[1])
+                    return Collision(rover, rover2);
+                else
+                    rover.y--;
+            }
+            else if (rover.direction == 'S')
+            {
+                rover.x--;
+                if (rover.x >= 0)
+                    return Collision(rover, rover2);
+                else
+                    rover.x++;
+            }
+            else
+            {
+                rover.y--;
+                if (rover.y >= 0)
+                    return Collision(rover, rover2);
+                else
+                    rover.y++;
+            }
             return false;
+        }
+
+        public static bool Collision(Rover rover, Rover rover2)
+        {
+            if (rover.x == rover2.x && rover.y == rover2.y)
+            {
+                Console.WriteLine("Collision Detected: collision occurs at point {0},{1}.", rover.x, rover.y);
+                return false;
+            }
+            else
+                return true;
         }
     }
 }
